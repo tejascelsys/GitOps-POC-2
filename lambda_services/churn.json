@@ -49,6 +49,176 @@
               "prediction": "0"
             }
           }
+        },
+        {
+          "name": "unlabeled_customers_churn_prediction #2",
+          "q": {
+            "features": {
+              "State": "KS",
+              "Account_Length": 128,
+              "Area_Code": 415,
+              "Phone": "382-4657",
+              "Intl_Plan": false,
+              "VMail_Plan": true,
+              "VMail_Message": 25,
+              "Day_Mins": 265.1,
+              "Day_Calls": 110,
+              "Day_Charge": 45.07,
+              "Eve_Mins": 197.4,
+              "Eve_Calls": 99,
+              "Eve_Charge": 16.78,
+              "Night_Mins": 244.7,
+              "Night_Calls": 91,
+              "Night_Charge": 11.01,
+              "Intl_Mins": 10,
+              "total_Mins": 717.2,
+              "Intl_Calls": 3,
+              "Intl_Charge": 2.7,
+              "Total_Charge": 75.56,
+              "ratio_charge_min": 0.10535415504740658,
+              "CustServ_Calls": 1,
+              "cluster_labels": "cluster_4",
+              "proba_0": 0.8790628475611664,
+              "proba_1": 0.12093715243883377,
+              "prediction": "0"
+            }
+          }
+        },
+        {
+          "name": "unlabeled_customers_churn_prediction #3",
+          "q": {
+            "features": {
+              "State": "OH",
+              "Account_Length": 107,
+              "Area_Code": 415,
+              "Phone": "371-7191",
+              "Intl_Plan": false,
+              "VMail_Plan": true,
+              "VMail_Message": 26,
+              "Day_Mins": 161.6,
+              "Day_Calls": 123,
+              "Day_Charge": 27.47,
+              "Eve_Mins": 195.5,
+              "Eve_Calls": 103,
+              "Eve_Charge": 16.62,
+              "Night_Mins": 254.4,
+              "Night_Calls": 103,
+              "Night_Charge": 11.45,
+              "Intl_Mins": 13.7,
+              "total_Mins": 625.2,
+              "Intl_Calls": 3,
+              "Intl_Charge": 3.7,
+              "Total_Charge": 59.24000000000001,
+              "ratio_charge_min": 0.09475367882277672,
+              "CustServ_Calls": 1,
+              "cluster_labels": "cluster_1",
+              "proba_0": 0.9359809129744089,
+              "proba_1": 0.06401908702559121,
+              "prediction": "0"
+            }
+          }
+        },
+        {
+          "name": "unlabeled_customers_churn_prediction #4",
+          "q": {
+            "features": {
+              "State": "NJ",
+              "Account_Length": 137,
+              "Area_Code": 415,
+              "Phone": "358-1921",
+              "Intl_Plan": false,
+              "VMail_Plan": false,
+              "VMail_Message": 0,
+              "Day_Mins": 243.4,
+              "Day_Calls": 114,
+              "Day_Charge": 41.38,
+              "Eve_Mins": 121.2,
+              "Eve_Calls": 110,
+              "Eve_Charge": 10.3,
+              "Night_Mins": 162.6,
+              "Night_Calls": 104,
+              "Night_Charge": 7.32,
+              "Intl_Mins": 12.2,
+              "total_Mins": 539.4000000000001,
+              "Intl_Calls": 5,
+              "Intl_Charge": 3.29,
+              "Total_Charge": 62.290000000000006,
+              "ratio_charge_min": 0.11548016314423433,
+              "CustServ_Calls": 0,
+              "cluster_labels": "cluster_3",
+              "proba_0": 0.8908774703697729,
+              "proba_1": 0.10912252963022727,
+              "prediction": "0"
+            }
+          }
+        },
+        {
+          "name": "unlabeled_customers_churn_prediction #5",
+          "q": {
+            "features": {
+              "State": "OH",
+              "Account_Length": 84,
+              "Area_Code": 408,
+              "Phone": "375-9999",
+              "Intl_Plan": true,
+              "VMail_Plan": false,
+              "VMail_Message": 0,
+              "Day_Mins": 299.4,
+              "Day_Calls": 71,
+              "Day_Charge": 50.9,
+              "Eve_Mins": 61.9,
+              "Eve_Calls": 88,
+              "Eve_Charge": 5.26,
+              "Night_Mins": 196.9,
+              "Night_Calls": 89,
+              "Night_Charge": 8.86,
+              "Intl_Mins": 6.6,
+              "total_Mins": 564.8,
+              "Intl_Calls": 7,
+              "Intl_Charge": 1.78,
+              "Total_Charge": 66.8,
+              "ratio_charge_min": 0.11827195467422097,
+              "CustServ_Calls": 2,
+              "cluster_labels": "cluster_3",
+              "proba_0": 0.848719339278995,
+              "proba_1": 0.15128066072100496,
+              "prediction": "0"
+            }
+          }
+        },
+        {
+          "name": "unlabeled_customers_churn_prediction #6",
+          "q": {
+            "features": {
+              "State": "OK",
+              "Account_Length": 75,
+              "Area_Code": 415,
+              "Phone": "330-6626",
+              "Intl_Plan": true,
+              "VMail_Plan": false,
+              "VMail_Message": 0,
+              "Day_Mins": 166.7,
+              "Day_Calls": 113,
+              "Day_Charge": 28.34,
+              "Eve_Mins": 148.3,
+              "Eve_Calls": 122,
+              "Eve_Charge": 12.61,
+              "Night_Mins": 186.9,
+              "Night_Calls": 121,
+              "Night_Charge": 8.41,
+              "Intl_Mins": 10.1,
+              "total_Mins": 512,
+              "Intl_Calls": 3,
+              "Intl_Charge": 2.73,
+              "Total_Charge": 52.09,
+              "ratio_charge_min": 0.10173828125,
+              "CustServ_Calls": 3,
+              "cluster_labels": "cluster_6",
+              "proba_0": 0.8333761705684678,
+              "proba_1": 0.1666238294315322,
+              "prediction": "0"
+            }
+          }
         }
       ],
       "enrichMapping": [],
