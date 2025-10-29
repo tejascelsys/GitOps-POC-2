@@ -205,7 +205,8 @@
     },
     "dkuProperties": []
   },
-  "name": "Predicting churn",
+  "name": "Predicting churn for Yathin G N",
+  "projectStatus": "Sandbox",
   "imgPattern": 4,
   "metrics": {
     "probes": [],
