@@ -3,7 +3,7 @@
   "error": null,
   "endpoints": [
     {
-      "modelRef": "UYFld51u",
+      "modelRef": "5HExUjQ1",
       "useJava": false,
       "computePropensity": false,
       "outputExplanations": false,
@@ -15,13 +15,48 @@
         "shapleyBackgroundSize": 100
       },
       "mlFlowOutputStyle": "RAW",
-      "testQueries": [],
+      "testQueries": [
+        {
+          "name": "unlabeled_customers_churn_prediction #1",
+          "q": {
+            "features": {
+              "State": "KS",
+              "Account_Length": 128,
+              "Area_Code": 415,
+              "Phone": "382-4657",
+              "Intl_Plan": false,
+              "VMail_Plan": true,
+              "VMail_Message": 25,
+              "Day_Mins": 265.1,
+              "Day_Calls": 110,
+              "Day_Charge": 45.07,
+              "Eve_Mins": 197.4,
+              "Eve_Calls": 99,
+              "Eve_Charge": 16.78,
+              "Night_Mins": 244.7,
+              "Night_Calls": 91,
+              "Night_Charge": 11.01,
+              "Intl_Mins": 10,
+              "total_Mins": 717.2,
+              "Intl_Calls": 3,
+              "Intl_Charge": 2.7,
+              "Total_Charge": 75.56,
+              "ratio_charge_min": 0.10535415504740658,
+              "CustServ_Calls": 1,
+              "cluster_labels": "cluster_4",
+              "proba_0": 0.8790628475611664,
+              "proba_1": 0.12093715243883377,
+              "prediction": "0"
+            }
+          }
+        }
+      ],
       "enrichMapping": [],
       "healthCheckQueries": [],
       "returnPostEnrichData": false,
       "auditPostEnrichData": false,
       "id": "churn",
-      "type": "STD_CLUSTERING",
+      "type": "STD_PREDICTION",
       "openAPI": {
         "title": "churn",
         "content": "{\n  \"paths\" : {\n    \"/churn/predict\" : {\n      \"post\" : {\n        \"summary\" : \"churn endpoint\",\n        \"description\" : \"Prediction type: STD_CLUSTERING\",\n        \"parameters\" : [ {\n          \"in\" : \"body\",\n          \"name\" : \"serviceInputPayload\",\n          \"description\" : \"The input payload for executing the real-time machine learning service.\",\n          \"required\" : true,\n          \"schema\" : {\n            \"$ref\" : \"#/definitions/churn_EndpointInput\"\n          }\n        } ],\n        \"responses\" : {\n          \"200\" : {\n            \"description\" : \"The service processed the input correctly and provided a result prediction, if applicable.\",\n            \"schema\" : {\n              \"$ref\" : \"#/definitions/churn_EndpointOutput\"\n            }\n          },\n          \"default\" : {\n            \"description\" : \"The service failed to execute due to an error.\",\n            \"schema\" : {\n              \"$ref\" : \"#/definitions/churn_ErrorResponse\"\n            }\n          }\n        }\n      }\n    }\n  },\n  \"definitions\" : {\n    \"churn_EndpointInput\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"features\" : {\n          \"type\" : \"object\",\n          \"properties\" : {\n            \"stringPropExample\" : {\n              \"type\" : \"string\"\n            },\n            \"intPropExample\" : {\n              \"type\" : \"integer\",\n              \"format\" : \"int32\"\n            },\n            \"doublePropExample\" : {\n              \"type\" : \"number\",\n              \"format\" : \"double\"\n            },\n            \"boolPropExample\" : {\n              \"type\" : \"boolean\"\n            },\n            \"floatPropExample\" : {\n              \"type\" : \"number\",\n              \"format\" : \"float\"\n            }\n          }\n        }\n      }\n    },\n    \"churn_EndpointOutput\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"result\" : {\n          \"type\" : \"object\",\n          \"properties\" : {\n            \"OutputPropExample\" : {\n              \"type\" : \"string\"\n            }\n          }\n        }\n      }\n    },\n    \"churn_ErrorResponse\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"status_code\" : {\n          \"type\" : \"integer\",\n          \"format\" : \"int32\"\n        },\n        \"message\" : {\n          \"type\" : \"string\"\n        }\n      }\n    }\n  }\n}",
