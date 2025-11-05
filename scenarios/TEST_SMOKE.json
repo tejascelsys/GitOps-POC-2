@@ -2,13 +2,6 @@
   "type": "custom_python",
   "name": "TEST_SMOKE",
   "active": false,
-  "creationTag": {
-    "versionNumber": 0,
-    "lastModifiedBy": {
-      "login": "tejas.prakash"
-    },
-    "lastModifiedOn": 1762173625066
-  },
   "checklists": {
     "checklists": []
   },
