@@ -3,7 +3,7 @@ name: Dataiku CI/CD – Dev to Test
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy-dataiku:
