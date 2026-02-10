@@ -9,7 +9,7 @@ env:
   PROJECT_KEY: DKU_CHURN
   TARGET_ID: Test
   SCENARIO_ID: TEST_SMOKE
-  BUNDLE_PREFIX: gitops
+  BUNDLE_ID: gitops-latest
 
 jobs:
   deploy-dataiku:
