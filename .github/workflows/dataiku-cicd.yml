@@ -1,0 +1,59 @@
+name: Dataiku CI/CD – Dev to Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-dataiku:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set bundle ID
+        run: |
+          echo "BUNDLE_ID=gitops-${GITHUB_SHA}" >> $GITHUB_ENV
+
+      # --------------------------------------------------
+      # STEP 1: Create bundle in Design
+      # --------------------------------------------------
+      - name: Create Dataiku bundle
+        run: |
+          curl -s -X POST \
+            "${{ secrets.DESIGN_URL }}/public/api/projects/DKU_CHURN/bundles/${{ env.BUNDLE_ID }}" \
+            -H "Authorization: Bearer ${{ secrets.DESIGN_API_KEY }}"
+
+      # --------------------------------------------------
+      # STEP 2: Publish bundle to Deployer
+      # --------------------------------------------------
+      - name: Publish bundle to Deployer
+        run: |
+          curl -s -X POST \
+            "${{ secrets.DESIGN_URL }}/public/api/projects/DKU_CHURN/bundles/${{ env.BUNDLE_ID }}/publish" \
+            -H "Authorization: Bearer ${{ secrets.DESIGN_API_KEY }}"
+
+      # --------------------------------------------------
+      # STEP 3: Deploy bundle to Test Automation
+      # --------------------------------------------------
+      - name: Deploy bundle to Test environment
+        run: |
+          curl -s -X POST \
+            "${{ secrets.DEPLOYER_URL }}/public/api/deployments/projects/DKU_CHURN/deploy" \
+            -H "Authorization: Bearer ${{ secrets.DEPLOYER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "bundleId": "${{ env.BUNDLE_ID }}",
+              "targetId": "Test"
+            }'
+
+            # --------------------------------------------------
+      # STEP 4: Run validation scenario
+      # --------------------------------------------------
+      - name: Run post-deploy validation
+        run: |
+          curl -s -X POST \
+            "${{ secrets.AUTOMATION_URL }}/public/api/projects/DKU_CHURN/scenarios/POST_DEPLOY_TEST/run" \
+            -H "Authorization: Bearer ${{ secrets.AUTOMATION_API_KEY }}"
