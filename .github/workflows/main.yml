@@ -5,55 +5,77 @@ on:
     branches:
       - master
 
+env:
+  PROJECT_KEY: DKU_CHURN
+  TARGET_ID: Test
+  SCENARIO_ID: TEST_SMOKE
+  BUNDLE_PREFIX: gitops
+
 jobs:
   deploy-dataiku:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Set bundle ID
-        run: |
-          echo "BUNDLE_ID=gitops-${GITHUB_SHA}" >> $GITHUB_ENV
+        run: echo "BUNDLE_ID=${BUNDLE_PREFIX}-${GITHUB_SHA}" >> $GITHUB_ENV
 
-      # --------------------------------------------------
-      # STEP 1: Create bundle in Design
-      # --------------------------------------------------
+      # -------------------------------
+      # STEP 1: Create bundle
+      # -------------------------------
       - name: Create Dataiku bundle
         run: |
           curl -s -X POST \
-            "${{ secrets.DESIGN_URL }}/public/api/projects/DKU_CHURN/bundles/${{ env.BUNDLE_ID }}" \
-            -H "Authorization: Bearer ${{ secrets.DESIGN_API_KEY }}"
+            "${{ secrets.DESIGN_URL }}/public/api/projects/${{ env.PROJECT_KEY }}/bundles/" \
+            -H "Authorization: Bearer ${{ secrets.DESIGN_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"bundleId\": \"${{ env.BUNDLE_ID }}\",
+              \"exportOptions\": {
+                \"exportUploads\": true,
+                \"exportManagedFS\": true
+              }
+            }"
 
-      # --------------------------------------------------
-      # STEP 2: Publish bundle to Deployer
-      # --------------------------------------------------
+      - name: Wait for bundle creation
+        run: sleep 15
+
+      # -------------------------------
+      # STEP 2: Publish bundle
+      # -------------------------------
       - name: Publish bundle to Deployer
         run: |
           curl -s -X POST \
-            "${{ secrets.DESIGN_URL }}/public/api/projects/DKU_CHURN/bundles/${{ env.BUNDLE_ID }}/publish" \
+            "${{ secrets.DESIGN_URL }}/public/api/projects/${{ env.PROJECT_KEY }}/bundles/${{ env.BUNDLE_ID }}/publish" \
             -H "Authorization: Bearer ${{ secrets.DESIGN_API_KEY }}"
 
-      # --------------------------------------------------
-      # STEP 3: Deploy bundle to Test Automation
-      # --------------------------------------------------
-      - name: Deploy bundle to Test environment
+      - name: Wait for publish
+        run: sleep 10
+
+      # -------------------------------
+      # STEP 3: Deploy to Test
+      # -------------------------------
+      - name: Deploy bundle to Test
         run: |
           curl -s -X POST \
-            "${{ secrets.DEPLOYER_URL }}/public/api/deployments/projects/DKU_CHURN/deploy" \
+            "${{ secrets.DEPLOYER_URL }}/public/api/deployer/projects/${{ env.PROJECT_KEY }}/deploy" \
             -H "Authorization: Bearer ${{ secrets.DEPLOYER_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{
-              "bundleId": "${{ env.BUNDLE_ID }}",
-              "targetId": "Test"
-            }'
+            -d "{
+              \"bundleId\": \"${{ env.BUNDLE_ID }}\",
+              \"deploymentTargetId\": \"${{ env.TARGET_ID }}\"
+            }"
 
-            # --------------------------------------------------
+      - name: Wait for deployment
+        run: sleep 15
+
+      # -------------------------------
       # STEP 4: Run validation scenario
-      # --------------------------------------------------
-      - name: Run post-deploy validation
+      # -------------------------------
+      - name: Run post-deploy scenario
         run: |
           curl -s -X POST \
-            "${{ secrets.AUTOMATION_URL }}/public/api/projects/DKU_CHURN/scenarios/POST_DEPLOY_TEST/run" \
+            "${{ secrets.AUTOMATION_URL }}/public/api/projects/${{ env.PROJECT_KEY }}/scenarios/${{ env.SCENARIO_ID }}/run" \
             -H "Authorization: Bearer ${{ secrets.AUTOMATION_API_KEY }}"
