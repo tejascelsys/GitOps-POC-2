@@ -9,7 +9,7 @@ env:
   PROJECT_KEY: DKU_CHURN
   TARGET_ID: Test
   SCENARIO_ID: TEST_SMOKE
-  BUNDLE_ID: gitops-latest
+  BUNDLE_ID: GitOps-latest
 
 jobs:
   deploy-dataiku:
@@ -28,7 +28,7 @@ jobs:
       - name: Create Dataiku bundle
         run: |
           curl -s -X POST \
-            "${{ secrets.DESIGN_URL }}/public/api/projects/${{ env.PROJECT_KEY }}/bundles/" \
+            "${{ secrets.DESIGN_URL }}/public/api/projects/${{ env.PROJECT_KEY }}/bundles-design/" \
             -H "Authorization: Bearer ${{ secrets.DESIGN_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d "{
@@ -48,7 +48,7 @@ jobs:
       - name: Publish bundle to Deployer
         run: |
           curl -s -X POST \
-            "${{ secrets.DESIGN_URL }}/public/api/projects/${{ env.PROJECT_KEY }}/bundles/${{ env.BUNDLE_ID }}/publish" \
+            "${{ secrets.DESIGN_URL }}/public/api/projects/${{ env.PROJECT_KEY }}/bundles-design/${{ env.BUNDLE_ID }}/publish" \
             -H "Authorization: Bearer ${{ secrets.DESIGN_API_KEY }}"
 
       - name: Wait for publish
@@ -60,7 +60,7 @@ jobs:
       - name: Deploy bundle to Test
         run: |
           curl -s -X POST \
-            "${{ secrets.DEPLOYER_URL }}/public/api/deployer/projects/${{ env.PROJECT_KEY }}/deploy" \
+            "${{ secrets.DEPLOYER_URL }}/public/api/project-deployer/projects/${{ env.PROJECT_KEY }}/deploy" \
             -H "Authorization: Bearer ${{ secrets.DEPLOYER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d "{
