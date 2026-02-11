@@ -1,81 +1,108 @@
-name: Dataiku CI/CD – Dev to Test
+name: Dataiku Test Deployment
 
 on:
   push:
     branches:
-      - master
-
-env:
-  PROJECT_KEY: DKU_CHURN
-  TARGET_ID: Test
-  SCENARIO_ID: TEST_SMOKE
-  BUNDLE_ID: GitOps-latest
+      - main
 
 jobs:
-  deploy-dataiku:
+  deploy-bundle:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set bundle ID
-        run: echo "BUNDLE_ID=${BUNDLE_PREFIX}-${GITHUB_SHA}" >> $GITHUB_ENV
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
 
-      # -------------------------------
-      # STEP 1: Create bundle
-      # -------------------------------
-      - name: Create Dataiku bundle
+      - name: Install Dependencies
         run: |
-          curl -s -X POST \
-            "${{ secrets.DESIGN_URL }}/projects/${{ env.PROJECT_KEY }}/bundles-design/" \
-            -H "Authorization: Bearer ${{ secrets.DESIGN_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"bundleId\": \"${{ env.BUNDLE_ID }}\",
-              \"exportOptions\": {
-                \"exportUploads\": true,
-                \"exportManagedFS\": true
-              }
-            }"
+          python -m pip install --upgrade pip
+          pip install dataiku-api-client
 
-      - name: Wait for bundle creation
-        run: sleep 15
-
-      # -------------------------------
-      # STEP 2: Publish bundle
-      # -------------------------------
-      - name: Publish bundle to Deployer
+      - name: Create & Deploy Bundle to Test Environment
+        env:
+          DESIGN_URL: ${{ secrets.DESIGN_URL }}
+          DESIGN_API_KEY: ${{ secrets.DESIGN_API_KEY }}
+          DEPLOYER_URL: ${{ secrets.DEPLOYER_URL }}
+          DEPLOYER_API_KEY: ${{ secrets.DEPLOYER_API_KEY }}
+          DATAIKU_PROJECT_KEY: DKU_CHURN   # 🔴 Replace this
+          DATAIKU_INFRA_ID: Test-Environment-automation-node         # 🔴 Replace this
         run: |
-          curl -s -X POST \
-            "${{ secrets.DESIGN_URL }}/projects/${{ env.PROJECT_KEY }}/bundles-design/${{ env.BUNDLE_ID }}/publish" \
-            -H "Authorization: Bearer ${{ secrets.DESIGN_API_KEY }}"
+          python <<EOF
+          import os
+          import subprocess
+          import dataikuapi
 
-      - name: Wait for publish
-        run: sleep 10
+          print("Connecting to Design Node...")
 
-      # -------------------------------
-      # STEP 3: Deploy to Test
-      # -------------------------------
-      - name: Deploy bundle to Test
-        run: |
-          curl -s -X POST \
-            "${{ secrets.DEPLOYER_URL }}/project-deployer/projects/${{ env.PROJECT_KEY }}/deploy" \
-            -H "Authorization: Bearer ${{ secrets.DEPLOYER_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"bundleId\": \"${{ env.BUNDLE_ID }}\",
-              \"deploymentTargetId\": \"${{ env.TARGET_ID }}\"
-            }"
+          design_client = dataikuapi.DSSClient(
+              os.environ["DESIGN_URL"],
+              os.environ["DESIGN_API_KEY"],
+              no_check_certificate=True
+          )
 
-      - name: Wait for deployment
-        run: sleep 15
+          print("Connecting to Deployer...")
 
-      # -------------------------------
-      # STEP 4: Run validation scenario
-      # -------------------------------
-      - name: Run post-deploy scenario
-        run: |
-          curl -s -X POST \
-            "${{ secrets.AUTOMATION_URL }}/public/api/projects/${{ env.PROJECT_KEY }}/scenarios/${{ env.SCENARIO_ID }}/run" \
-            -H "Authorization: Bearer ${{ secrets.AUTOMATION_API_KEY }}"
+          deployer_client = dataikuapi.DSSClient(
+              os.environ["DEPLOYER_URL"],
+              os.environ["DEPLOYER_API_KEY"],
+              no_check_certificate=True
+          )
+
+          project_key = os.environ["DATAIKU_PROJECT_KEY"]
+          infra_id = os.environ["DATAIKU_INFRA_ID"]
+
+          # Generate bundle ID from Git SHA
+          sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"]
+          ).decode().strip()
+
+          bundle_id = f"bundle_{sha[:8]}"
+          print(f"Creating bundle: {bundle_id}")
+
+          project = design_client.get_project(project_key)
+
+          # Export bundle from Design
+          project.export_bundle(bundle_id)
+          print("Bundle exported successfully")
+
+          # Publish bundle to Deployer
+          project.publish_bundle(bundle_id)
+          print("Bundle published to Deployer")
+
+          # Deploy on Deployer
+          deployer = deployer_client.get_projectdeployer()
+          deployment_id = "test-deployment"  # 🔴 change if needed
+
+          try:
+              deployment = deployer.get_deployment(deployment_id)
+              print("Existing deployment found. Updating bundle...")
+
+              settings = deployment.get_settings()
+              settings["bundleId"] = bundle_id
+              deployment.set_settings(settings)
+
+          except:
+              print("Deployment does not exist. Creating new deployment...")
+
+              deployment = deployer.create_deployment(
+                  deployment_id=deployment_id,
+                  project_key=project_key,
+                  infra_id=infra_id,
+                  bundle_id=bundle_id
+              )
+
+          update = deployment.start_update()
+          result = update.wait_for_result()
+
+          print("Deployment result:", result)
+
+          if result.get("state") != "SUCCESS":
+              raise Exception("Deployment failed")
+
+          print("✅ Deployment successful!")
+          EOF
