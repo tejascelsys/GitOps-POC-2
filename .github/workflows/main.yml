@@ -3,7 +3,7 @@ name: Dataiku Test Deployment
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy-bundle:
