@@ -116,7 +116,10 @@ jobs:
               print("Existing deployment found. Updating bundle...")
           
               settings = deployment.get_settings()
-              settings.set_bundle_id(bundle_id)
+          
+              # Direct property assignment (older DSS style)
+              settings.bundle_id = bundle_id
+          
               settings.save()
           
               update = deployment.start_update()
@@ -141,5 +144,6 @@ jobs:
               raise Exception("Deployment failed")
           
           print("✅ Deployment successful!")
+
           
           
