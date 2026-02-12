@@ -108,25 +108,34 @@ jobs:
           # EOF
 
           # Deploy on Deployer
+          
           deployer = deployer_client.get_projectdeployer()
           deployment_id = "test-deployment"
           
           try:
               deployment = deployer.get_deployment(deployment_id)
               print("Existing deployment found. Updating bundle...")
-              
-              update = deployment.update(bundle_id=bundle_id)
+          
+              settings = deployment.get_settings()
+              raw = settings.get_raw()
+          
+              raw["bundleId"] = bundle_id
+          
+              settings.set_raw(raw)
+              settings.save()
+          
+              update = deployment.start_update()
           
           except dataikuapi.utils.DataikuException:
               print("Deployment does not exist. Creating new deployment...")
-              
+          
               deployment = deployer.create_deployment(
                   deployment_id=deployment_id,
                   project_key=project_key,
                   infra_id=infra_id,
                   bundle_id=bundle_id
               )
-              
+          
               update = deployment.start_update()
           
           result = update.wait_for_result()
@@ -137,4 +146,4 @@ jobs:
               raise Exception("Deployment failed")
           
           print("✅ Deployment successful!")
-          
+          EOF
