@@ -29,8 +29,8 @@ jobs:
           DESIGN_API_KEY: ${{ secrets.DESIGN_API_KEY }}
           DEPLOYER_URL: ${{ secrets.DEPLOYER_URL }}
           DEPLOYER_API_KEY: ${{ secrets.DEPLOYER_API_KEY }}
-          DATAIKU_PROJECT_KEY: DKU_CHURN   # 🔴 Replace this
-          DATAIKU_INFRA_ID: Test-Environment-automation-node         # 🔴 Replace this
+          DATAIKU_PROJECT_KEY: DKU_CHURN   
+          DATAIKU_INFRA_ID: Test-Environment-automation-node        
         run: |
           python <<EOF
           import os
@@ -76,7 +76,7 @@ jobs:
 
           # Deploy on Deployer
           # deployer = deployer_client.get_projectdeployer()
-          # deployment_id = "test-deployment"  # 🔴 change if needed
+          # deployment_id = "test-deployment"  
 
           # try:
           #     deployment = deployer.get_deployment(deployment_id)
@@ -144,6 +144,24 @@ jobs:
               raise Exception("Deployment failed")
           
           print("✅ Deployment successful!")
+          
+          
+          print("Triggering scenario...")
+
+          automation_client = dataikuapi.DSSClient(
+              os.environ["AUTOMATION_URL"],
+              os.environ["AUTOMATION_API_KEY"],
+              no_check_certificate=True
+          )
+          
+          project = automation_client.get_project(project_key)
+          
+          scenario_id = "TEST_SMOKE"  
+          scenario = project.get_scenario(scenario_id)
+          
+          run = scenario.run()
+          print("Scenario run triggered:", run)
+
 
           
           
