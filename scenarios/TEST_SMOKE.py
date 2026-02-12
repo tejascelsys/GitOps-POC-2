@@ -27,3 +27,4 @@
 print("Hello from TEST_SMOKE scenario!")
 print("Everything looks OK in this environment.")
 print("Everything looks OK in this environments.")
+print("Everything looks OK in this environments.")
